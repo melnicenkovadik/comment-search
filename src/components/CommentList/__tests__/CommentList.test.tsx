@@ -60,7 +60,7 @@ describe('CommentList', () => {
   })
 
   it('truncates long comments to 64 characters', () => {
-    render(<CommentList comments={mockComments} />)
+    render(<CommentList comments={mockComments} searchQuery="" />)
 
     const truncatedText = 'This is a test comment that is longer than 64 characters and sho...'
     expect(screen.getByText(truncatedText)).toBeInTheDocument()
