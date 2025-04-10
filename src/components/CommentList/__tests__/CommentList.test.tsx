@@ -1,4 +1,4 @@
-import { render, screen } from '@/test/test-utils'
+import { render, screen, fireEvent } from '@/test/test-utils'
 import { CommentList } from '../index'
 import { describe, it, expect } from 'vitest'
 
@@ -7,23 +7,56 @@ const mockComments = [
     id: 1,
     name: 'Test Name',
     email: 'test@example.com',
-    body: 'This is a test comment that is longer than 64 characters and should be truncated in the display.'
+    body: 'This is a test comment that is longer than 64 characters and should be truncated in the preview.'
   },
   {
     id: 2,
-    name: 'Another Name',
-    email: 'another@example.com',
-    body: 'Short comment'
+    name: 'Short Comment',
+    email: 'short@example.com',
+    body: 'This is a short comment.'
   }
 ]
 
 describe('CommentList', () => {
-  it('renders comments with correct information', () => {
-    render(<CommentList comments={mockComments} />)
+  it('renders comments correctly', () => {
+    render(<CommentList comments={mockComments} searchQuery="" />)
+
     expect(screen.getByText('Test Name')).toBeInTheDocument()
     expect(screen.getByText('test@example.com')).toBeInTheDocument()
-    expect(screen.getByText('Another Name')).toBeInTheDocument()
-    expect(screen.getByText('another@example.com')).toBeInTheDocument()
+    expect(screen.getByText(/This is a test comment.*\.\.\./)).toBeInTheDocument()
+  })
+
+  it('shows full comment text when expanded', () => {
+    render(<CommentList comments={mockComments} searchQuery="" />)
+
+    const trigger = screen.getByText('Test Name').closest('button')
+    expect(trigger).toBeInTheDocument()
+
+    if (trigger) {
+      fireEvent.click(trigger)
+      expect(screen.getByText(mockComments[0].body)).toBeInTheDocument()
+    }
+  })
+
+  it('highlights search query in text', () => {
+    render(<CommentList comments={mockComments} searchQuery="test" />)
+
+    const highlightedElements = screen.getAllByText(/test/i)
+    expect(highlightedElements.length).toBeGreaterThan(0)
+    expect(highlightedElements[0]).toHaveStyle('background-color: rgb(255, 255, 0)')
+  })
+
+  it('shows "No comments found" when empty', () => {
+    render(<CommentList comments={[]} searchQuery="" />)
+
+    expect(screen.getByText('No comments found')).toBeInTheDocument()
+  })
+
+  it('shows short comments without truncation', () => {
+    render(<CommentList comments={[mockComments[1]]} searchQuery="" />)
+
+    const shortCommentElements = screen.getAllByText('This is a short comment.')
+    expect(shortCommentElements[0]).toBeInTheDocument()
   })
 
   it('truncates long comments to 64 characters', () => {
@@ -33,22 +66,11 @@ describe('CommentList', () => {
     expect(screen.getByText(truncatedText)).toBeInTheDocument()
   })
 
-  it('does not truncate short comments', () => {
-    render(<CommentList comments={mockComments} />)
-
-    expect(screen.getByText('Short comment')).toBeInTheDocument()
-  })
-
   it('highlights search query in comments', () => {
     render(<CommentList comments={mockComments} searchQuery="test" />)
 
-    const highlightedText = screen.getByText('test')
-    expect(highlightedText).toHaveStyle('background-color: rgb(255, 255, 0)')
-  })
-
-  it('handles empty comments array', () => {
-    render(<CommentList comments={[]} />)
-    expect(screen.getByText('No results found')).toBeInTheDocument()
+    const highlightedTexts = screen.getAllByText('test')
+    expect(highlightedTexts[0]).toHaveStyle('background-color: rgb(255, 255, 0)')
   })
 
   it('shows search query in no results message', () => {

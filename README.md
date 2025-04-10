@@ -16,15 +16,15 @@ A React-based application for searching comments using the JSONPlaceholder API. 
 The easiest way to run the application:
 
 ```bash
-# Build and start the application
-npm run docker:start
+# Build and start
+docker build -t comment_search:latest . && docker run -p 8080:8080 comment_search:latest
 
-# Or run commands separately:
-npm run docker:build  # Build the Docker image
-npm run docker:run   # Run the container
+# Or separately:
+docker build -t comment_search:latest .  # Build
+docker run -p 8080:8080 comment_search:latest  # Run
 
-# Stop the container
-npm run docker:stop
+# Stop
+docker stop $(docker ps -q --filter ancestor=comment_search:latest) && docker rm $(docker ps -aq --filter ancestor=comment_search:latest)
 ```
 
 The application will be available at `http://localhost:8080`
@@ -93,6 +93,7 @@ src/
 ✅ Docker support with port 8080
 
 ### Bonus Features
+
 ✅ Typeahead suggestions
 ✅ Pagination
 
@@ -112,4 +113,5 @@ src/
 ## License
 
 MIT
+
 # comment-search

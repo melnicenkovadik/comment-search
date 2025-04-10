@@ -46,19 +46,21 @@ export const ColorModeButton = React.forwardRef<HTMLButtonElement, ColorModeButt
   }
 )
 
-export const LightMode = React.forwardRef<HTMLDivElement, SpanProps>(function LightMode(props, ref) {
-  return (
-    <Container
-      color="fg"
-      display="contents"
-      className="chakra-theme light"
-      colorPalette="gray"
-      colorScheme="light"
-      ref={ref}
-      {...props}
-    />
-  )
-})
+export const LightMode = React.forwardRef<HTMLDivElement, SpanProps>(
+  function LightMode(props, ref) {
+    return (
+      <Container
+        color="fg"
+        display="contents"
+        className="chakra-theme light"
+        colorPalette="gray"
+        colorScheme="light"
+        ref={ref}
+        {...props}
+      />
+    )
+  }
+)
 
 export const DarkMode = React.forwardRef<HTMLDivElement, SpanProps>(function DarkMode(props, ref) {
   return (
